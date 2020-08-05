@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -g -Wall
 
 TARGET = cat
-.PHONY: all clean format test
+.PHONY: all clean format check
 
 all: $(TARGET)
 
@@ -11,7 +11,7 @@ clean:
 format:
 	clang-format -i *.c
 
-test: all
+check: all
 	./test.sh
 
 cat: cat.o
