@@ -14,9 +14,12 @@ cmp <(./cat cat.c) cat.c || error "Error: differ $LINENO"
 cmp <(./cat cat.c test.sh) <(cat cat.c test.sh) \
     || error "Error: multi files  $LINENO"
 
+# cannot open file
 ./cat ''       2>/dev/null >&2 && error "Error: $LINENO: cannot open file"
 ./cat '' cat.c 2>/dev/null >&2 && error "Error: $LINENO: cannot open file"
 
-./cat . 2>/dev/null && error "Error: $LINENO: directory"
+# directory
+./cat .       2>/dev/null >&2 && error "Error: $LINENO: directory"
+./cat . cat.c 2>/dev/null >&2 && error "Error: $LINENO: directory"
 
 echo "Ok." 
