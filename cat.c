@@ -27,10 +27,17 @@ static bool is_dir(char *path) {
 
 /** NULL if failure */
 static FILE *open_file(char *path) {
+  static bool used_stdin = false;
+
   if (strcmp(path, "-") == 0) {
-    return fdopen(0, "r");
+    if (used_stdin) {
+      fprintf(stderr, "%s: multiple - is specified\n", progname);
+      return NULL;
+    }
+    used_stdin = true;
+    return stdin;
   }
-  
+
   if (is_dir(path)) {
     fprintf(stderr, "%s: %s: is directory\n", progname, path);
     return NULL;
@@ -41,17 +48,8 @@ static FILE *open_file(char *path) {
     fprintf(stderr, "%s: %s: %s\n", progname, path, strerror(errno));
     return NULL;
   }
-  return f;
-}
 
-/** 
- * close FILE except stdin 
- * support ./cat - -
-*/
-static void close_file(char *path, FILE *file) {
-  if (strcmp(path, "-") != 0) {
-    fclose(file);
-  }
+  return f;
 }
 
 int main(int argc, char **argv) {
@@ -72,7 +70,7 @@ int main(int argc, char **argv) {
       continue;
     }
     cat(f);
-    close_file(*p, f);
+    fclose(f);
   }
 
   return ret;
