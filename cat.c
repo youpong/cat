@@ -27,6 +27,10 @@ static bool is_dir(char *path) {
 
 /** NULL if failure */
 static FILE *open_file(char *path) {
+  if (strcmp(path, "-") == 0) {
+    return fdopen(0, "r");
+  }
+  
   if (is_dir(path)) {
     fprintf(stderr, "%s: %s: is directory\n", progname, path);
     return NULL;
@@ -38,6 +42,16 @@ static FILE *open_file(char *path) {
     return NULL;
   }
   return f;
+}
+
+/** 
+ * close FILE except stdin 
+ * support ./cat - -
+*/
+static void close_file(char *path, FILE *file) {
+  if (strcmp(path, "-") != 0) {
+    fclose(file);
+  }
 }
 
 int main(int argc, char **argv) {
@@ -52,14 +66,13 @@ int main(int argc, char **argv) {
   }
 
   for (char **p = args; *p != NULL; p++) {
-    // TODO: '-'
     FILE *f = open_file(*p);
     if (f == NULL) {
       ret = EXIT_FAILURE;
       continue;
     }
     cat(f);
-    fclose(f);
+    close_file(*p, f);
   }
 
   return ret;

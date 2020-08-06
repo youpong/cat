@@ -10,7 +10,7 @@ cmp <(cat /dev/null | ./cat) /dev/null || error "Error: 0 input $LINENO"
 
 cmp <(./cat cat.c) cat.c || error "Error: differ $LINENO"
 
-# TODO: - as stdin
+# - as stdin
 cmp <(cat cat.c | ./cat -) cat.c || error "Error: differ $LINENO"
 
 # multiple file
