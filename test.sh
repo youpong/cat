@@ -6,9 +6,12 @@ function error() {
 }
 
 cmp <(cat cat.c | ./cat) cat.c || error "Error: differ $LINENO"
-cmp <(cat /dev/null | ./cat) /dev/null || error "Error: differ $LINENO"
+cmp <(cat /dev/null | ./cat) /dev/null || error "Error: 0 input $LINENO"
 
 cmp <(./cat cat.c) cat.c || error "Error: differ $LINENO"
+
+# TODO: - as stdin
+cmp <(cat cat.c | ./cat -) cat.c || error "Error: differ $LINENO"
 
 # multiple file
 cmp <(./cat cat.c test.sh) <(cat cat.c test.sh) \
