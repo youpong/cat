@@ -14,7 +14,13 @@ static void cat(FILE *f) {
 }
 
 static bool is_dir(char *path) {
-  return opendir(path) ? true : false;
+  bool ret;
+  
+  DIR* dir = opendir(path);
+  ret = dir != NULL ? true : false;
+  closedir(dir);
+
+  return ret;
 }
 
 int main(int argc, char **argv) {
