@@ -1,10 +1,12 @@
+#include <dirent.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
-#include <dirent.h>
 #include <sys/types.h>
+
+char *progname;
 
 static void cat(FILE *f) {
   int c;
@@ -15,17 +17,34 @@ static void cat(FILE *f) {
 
 static bool is_dir(char *path) {
   bool ret;
-  
-  DIR* dir = opendir(path);
+
+  DIR *dir = opendir(path);
   ret = dir != NULL ? true : false;
   closedir(dir);
 
   return ret;
 }
 
+/** NULL if failure */
+static FILE *open_file(char *path) {
+  if (is_dir(path)) {
+    fprintf(stderr, "%s: %s: is directory\n", progname, path);
+    return NULL;
+  }
+
+  FILE *f = fopen(path, "r");
+  if (f == NULL) {
+    fprintf(stderr, "%s: %s: %s\n", progname, path, strerror(errno));
+    return NULL;
+  }
+  return f;
+}
+
 int main(int argc, char **argv) {
   char **args = argv + 1;
   int ret = EXIT_SUCCESS;
+
+  progname = argv[0];
 
   if (argc == 1) {
     cat(stdin);
@@ -33,14 +52,9 @@ int main(int argc, char **argv) {
   }
 
   for (char **p = args; *p != NULL; p++) {
-    if (is_dir(*p)) {
-      fprintf(stderr, "%s: %s: is directory\n", argv[0], *p);
-      ret = EXIT_FAILURE;
-      continue;
-    }
-    FILE *f = fopen(*p, "r");
+    // TODO: '-'
+    FILE *f = open_file(*p);
     if (f == NULL) {
-      fprintf(stderr, "%s: %s: %s\n", argv[0], *p, strerror(errno));
       ret = EXIT_FAILURE;
       continue;
     }
