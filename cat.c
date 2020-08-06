@@ -20,9 +20,9 @@ int main(int argc, char **argv) {
   }
 
   for (char **p = args; *p != NULL; p++) {
-    FILE *f = fopen(*args, "r");
+    FILE *f = fopen(*p, "r");
     if (f == NULL) {
-      fprintf(stderr, "%s: %s: %s\n", argv[0], *args, strerror(errno));
+      fprintf(stderr, "%s: %s: %s\n", argv[0], *p, strerror(errno));
       ret = EXIT_FAILURE;
       continue;
     }
