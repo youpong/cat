@@ -1,32 +1,46 @@
 #!/bin/bash
 
+set -o nounset
+
+prog=./cat
+
 function error() {
     echo "$@" >&2
     exit 1
 }
 
-cmp <(cat cat.c | ./cat) cat.c || error "Error: differ $LINENO"
-cmp <(cat /dev/null | ./cat) /dev/null || error "Error: 0 input $LINENO"
+#
+# normal cases...
+#
 
-cmp <(./cat cat.c) cat.c || error "Error: differ $LINENO"
+# returns 0
+$prog $prog >/dev/null                 || error "must return 0"
 
+# one file
+cmp <($prog $prog) $prog               || error "differ in $LINENO"
+# stdin
+cmp <(cat $prog | $prog) $prog         || error "differ in $LINENO"
+# 0 input
+cmp <($prog /dev/null) /dev/null       || error "0 input in $LINENO"
 # - as stdin
-cmp <(cat cat.c | ./cat -) cat.c || error "Error: differ $LINENO"
-
+cmp <(cat $prog | $prog -) $prog       || error "differ $LINENO"
 # multiple file
-cmp <(./cat cat.c test.sh) <(cat cat.c test.sh) \
-    || error "Error: multi files  $LINENO"
+cmp <($prog $prog $0) <(cat $prog $0)  || error "multi files $LINENO"
 
-# multiple -
-cat /dev/null | ./cat - - 2>/dev/null \
-    && error "Error: multiple - throw error $LINENO"
+#
+# irregular cases...
+#
+
+# applied multiple standard input: not same as cat(1)
+cat /dev/null | $prog - - 2>/dev/null \
+    && error "should exit in error: multiple stdin $LINENO"
 
 # cannot open file
-./cat ''       2>/dev/null >&2 && error "Error: $LINENO: cannot open file"
-./cat '' cat.c 2>/dev/null >&2 && error "Error: $LINENO: cannot open file"
+$prog ''       2>/dev/null >&2 \
+    && error "should exit in error: $LINENO: cannot open file"
 
 # directory
-./cat .       2>/dev/null >&2 && error "Error: $LINENO: directory"
-./cat . cat.c 2>/dev/null >&2 && error "Error: $LINENO: directory"
+$prog .       2>/dev/null >&2 \
+    && error "should exit in error: $LINENO: directory"
 
-echo "Ok." 
+echo "Ok."
