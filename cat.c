@@ -25,7 +25,7 @@ static bool is_dir(char *path) {
   return ret;
 }
 
-/** NULL if failure */
+/** returns NULL if failure */
 static FILE *open_file(char *path) {
   static bool used_stdin = false;
 
@@ -53,17 +53,15 @@ static FILE *open_file(char *path) {
 }
 
 int main(int argc, char **argv) {
-  char **args = argv + 1;
-  int ret = EXIT_SUCCESS;
-
-  progname = argv[0];
+  progname = *argv++;
 
   if (argc == 1) {
     cat(stdin);
-    return 0;
+    return EXIT_SUCCESS;
   }
 
-  for (char **p = args; *p != NULL; p++) {
+  int ret = EXIT_SUCCESS;
+  for (char **p = argv; *p != NULL; ++p) {
     FILE *f = open_file(*p);
     if (f == NULL) {
       ret = EXIT_FAILURE;

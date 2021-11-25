@@ -1,2 +1,3 @@
-# cat
-UNIX clone simple cat program.
+# README.md
+
+simple UNIX clone cat.
