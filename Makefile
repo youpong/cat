@@ -1,9 +1,6 @@
-#CC = gcc
-
-#CFLAGS = -g -Wall -std=c18 -D_POSIX_C_SOURCE=200809L -D_DEFAULT_SOURCE
-CFLAGS = -g -Wall -std=c18
-
-LIBS =
+CC = clang
+CFLAGS = -g -Wall -std=c17
+LDFLAGS = -fuse-ld=mold
 
 TARGET = cat
 SRCS = cat.c
@@ -26,4 +23,4 @@ check: all test
 	./test
 
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $(OBJS) $(LIBS)
+	$(CC) -o $@ $(LIBS) $(LDFLAGS) $(OBJS)
