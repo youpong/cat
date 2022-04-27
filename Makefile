@@ -1,6 +1,10 @@
-CC = clang
+# for GNU Make
 CFLAGS = -g -Wall -std=c17
-LDFLAGS = -fuse-ld=mold
+ifneq (, $(strip $(findstring clang, $(CC))))
+	LDFLAGS = -fuse-ld=mold
+else
+	LDFLAGS = -B/usr/local/libexec/mold
+endif
 
 TARGET = cat
 SRCS = cat.c
