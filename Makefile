@@ -4,6 +4,7 @@ TARGET = cat
 SRCS = cat.c
 OBJS = $(SRCS:.c=.o)
 
+CC = gcc
 CFLAGS = -std=c18 -g -Wall -Wextra -pedantic
 ifneq (, $(strip $(findstring clang, $(CC))))
 	LDFLAGS = -fuse-ld=mold
