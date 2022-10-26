@@ -1,14 +1,15 @@
 # for GNU Make
-CFLAGS = -g -Wall -std=c17
+
+TARGET = cat
+SRCS = cat.c
+OBJS = $(SRCS:.c=.o)
+
+CFLAGS = -std=c18 -g -Wall -Wextra -pedantic
 ifneq (, $(strip $(findstring clang, $(CC))))
 	LDFLAGS = -fuse-ld=mold
 else
 	LDFLAGS = -B/usr/local/libexec/mold
 endif
-
-TARGET = cat
-SRCS = cat.c
-OBJS = $(SRCS:.c=.o)
 
 .PHONY: all clean format check tags
 
