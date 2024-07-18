@@ -16,11 +16,13 @@ static void cat(FILE *f) {
 }
 
 static bool is_dir(char *path) {
-  bool ret;
+  bool ret = false;
 
   DIR *dir = opendir(path);
-  ret = dir != NULL ? true : false;
-  closedir(dir);
+  if (dir != NULL) {
+    closedir(dir);
+    ret = true;
+  }
 
   return ret;
 }
